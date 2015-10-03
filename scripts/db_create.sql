@@ -1,0 +1,12 @@
+CREATE USER 'apiuser'@'localhost' IDENTIFIED BY 'apipw';
+
+CREATE DATABASE apidb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON `apidb`.* TO 'apiuser'@'%' IDENTIFIED BY 'apipw';
+
+CREATE DATABASE apishard0 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON `apishard0`.* TO 'apiuser'@'%' IDENTIFIED BY 'apipw';
+
+CREATE DATABASE apishard1 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON `apishard1`.* TO 'apiuser'@'%' IDENTIFIED BY 'apipw';
+
+FLUSH PRIVILEGES;

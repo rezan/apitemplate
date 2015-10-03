@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+    default-autowire="byName">
+    
+    <context:component-scan base-package="company" />
+
+    <bean id="dataSource_apidb" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${db.driver}" />
+        <property name="jdbcUrl" value="${db.url.apidb}" />
+        <property name="user" value="${db.user}" />
+        <property name="password" value="${db.password}" />
+        <property name="idleConnectionTestPeriod" value="300" />
+    </bean>
+
+    <bean id="dataSource_apishard0" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${db.driver}" />
+        <property name="jdbcUrl" value="${db.url.apishard0}" />
+        <property name="user" value="${db.user}" />
+        <property name="password" value="${db.password}" />
+        <property name="idleConnectionTestPeriod" value="300" />
+    </bean>
+
+    <bean id="dataSource_apishard1" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${db.driver}" />
+        <property name="jdbcUrl" value="${db.url.apishard1}" />
+        <property name="user" value="${db.user}" />
+        <property name="password" value="${db.password}" />
+        <property name="idleConnectionTestPeriod" value="300" />
+    </bean>
+    
+    <bean id="shardedDataSource" class="company.api.storage.dbrouting.ThreadDBChooser" init-method="init">
+        <property name="targetDataSources">
+            <map>
+                <entry key="apidb" value-ref="dataSource_apidb"/>
+                <entry key="apishard0" value-ref="dataSource_apishard0"/>
+                <entry key="apishard1" value-ref="dataSource_apishard1"/>
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="dataSource_apidb"/>
+        <property name="updateSchemaDBs" value="${db.updateSchema}" />
+    </bean>
+    
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="shardedDataSource" />
+        <property name="persistenceProviderClass" value="org.hibernate.ejb.HibernatePersistence"/>
+        <property name="packagesToScan">
+            <list>
+                <value>company.data</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+    
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+        
+    <context:annotation-config />
+    
+    <bean id="dbStorageManager" class="company.api.storage.DBStorageManager" />
+    
+    <bean id="database" class="company.api.storage.dbclients.Database" init-method="init" destroy-method="destroy" />
+    
+    <bean id="generalApiService" class="company.api.service.GeneralApiService" />
+    
+    <bean id="generalFilter" class="company.api.filters.GeneralFilter" />
+    
+    <bean id="utilities" class="company.api.utils.Utilities" />
+    
+    <bean id="configuration" class="company.api.settings.Configuration" init-method="init">
+        <property name="file" value="${config.location}" />
+    </bean>
+    
+</beans>

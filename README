@@ -1,0 +1,3 @@
+Java API backend using Spring and Hibernate.
+
+Supports DB sharding and auto updating schemas.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib>
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.1</jsp-version>
+  <short-name>jsonFormat</short-name>
+  <tag>
+    <name>jsonFormat</name>
+    <tag-class>company.api.tags.JsonFormat</tag-class>
+    <body-content>scriptless</body-content>
+  </tag>
+</taglib>
