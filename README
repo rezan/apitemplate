@@ -5,5 +5,7 @@ Supports DB sharding and auto updating schemas.
 
 TODO:
 
+-fix controller/service split
 -remove XML based context configuration
 -refactor and reorganize DB logic
+-unit tests
