@@ -11,7 +11,7 @@
 
     <properties>
         <app.name>api</app.name>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <build.date>${maven.build.timestamp}</build.date>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
