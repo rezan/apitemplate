@@ -11,6 +11,7 @@
 <h2>Links</h2>
 <a href="version.jsp">version</a>
 <a href="#general">General section</a>
+<a href="#servlet">Servlet section</a>
 
 <a id="general"><h2>General</h2></a>
 
@@ -29,6 +30,17 @@ Signup an email address
 -params: email
 <form action="general/emailsignup" method="POST">
 email: <input type="text" name="email">
+<input type="submit" value="Submit">
+</form>
+
+<a id="servlet"><h2>Servlet</h2></a>
+
+<b>echo</b>
+GET /servlet/echo
+Echo a parameter
+-params: param
+<form action="servlet/echo" method="GET">
+param: <input type="text" name="param">
 <input type="submit" value="Submit">
 </form>
 

@@ -5,7 +5,6 @@ Supports DB sharding and auto updating schemas.
 
 TODO:
 
--add servlet example
 -remove XML based context configuration
 -refactor and reorganize DB logic
 -unit tests
