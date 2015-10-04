@@ -8,23 +8,24 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 /**
  *
  * @author Reza Naghibi
  */
 @Entity
+@Table(indexes = {@Index(columnList = "keyStr", name = "keyStrIndex")})
 public class KeyValue implements Serializable {
 
   static final long serialVersionUID = 10000001;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
   @Basic
-  @Index(name = "keyIndex")
   private String keyStr;
 
   @Basic

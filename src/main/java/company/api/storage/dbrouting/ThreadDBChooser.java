@@ -1,5 +1,6 @@
 package company.api.storage.dbrouting;
 
+import company.api.settings.Constants;
 import company.api.utils.Utilities;
 
 import java.io.File;
@@ -8,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
-import company.api.settings.Constants;
 import org.apache.log4j.Logger;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.boot.spi.MetadataImplementor;
+import org.hibernate.cfg.Environment;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
@@ -36,13 +39,15 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
 
       setDB(db);
 
-      Configuration config = new Configuration();
-      config.setProperty(org.hibernate.cfg.Environment.HBM2DDL_AUTO, "create");
-      config.setProperty(org.hibernate.cfg.Environment.DIALECT, configuration.getProperty("db.dialect"));
-      config.setProperty(org.hibernate.cfg.Environment.URL, configuration.getProperty("db.url." + db));
-      config.setProperty(org.hibernate.cfg.Environment.USER, configuration.getProperty("db.user"));
-      config.setProperty(org.hibernate.cfg.Environment.PASS, configuration.getProperty("db.password"));
-      config.setProperty(org.hibernate.cfg.Environment.DRIVER, configuration.getProperty("db.driver"));
+      StandardServiceRegistryBuilder registry = new StandardServiceRegistryBuilder();
+      registry.applySetting(Environment.HBM2DDL_AUTO, "create");
+      registry.applySetting(Environment.DIALECT, configuration.getProperty("db.dialect"));
+      registry.applySetting(Environment.URL, configuration.getProperty("db.url." + db));
+      registry.applySetting(Environment.USER, configuration.getProperty("db.user"));
+      registry.applySetting(Environment.PASS, configuration.getProperty("db.password"));
+      registry.applySetting(Environment.DRIVER, configuration.getProperty("db.driver"));
+
+      MetadataSources metadata = new MetadataSources(registry.build());
 
       String pkg = Constants.PACKAGE_PREFIX + ".data." + trimShard(db);
 
@@ -50,10 +55,10 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
 
       for(Class cls : getClasses(pkg)) {
         log.info("ThreadDBChooser found class: " + cls.getName());
-        config.addAnnotatedClass(cls);
+        metadata.addAnnotatedClass(cls);
       }
 
-      SchemaUpdate update = new SchemaUpdate(config);
+      SchemaUpdate update = new SchemaUpdate((MetadataImplementor)metadata.buildMetadata());
       update.execute(true, true);
     }
 

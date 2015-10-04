@@ -19,7 +19,7 @@ public class EmailSignup implements Serializable {
   static final long serialVersionUID = 10000001;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
   @Basic
