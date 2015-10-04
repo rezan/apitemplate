@@ -1,17 +1,22 @@
 package company.api.controller;
 
+import company.api.data.apidb.EmailSignup;
+import company.api.data.apishard.KeyValue;
+import company.api.exceptions.BadParameterException;
 import company.api.exceptions.MsgCodeException;
-import company.api.service.GeneralApiService;
+import company.api.settings.Configuration;
 import company.api.utils.Utilities;
-import company.api.settings.Constants;
+import company.api.storage.DBStorageManager;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,28 +32,63 @@ public class GeneralAPI extends ExceptionAPI {
   private static final Logger log = Logger.getLogger(GeneralAPI.class);
 
   @Autowired
-  private GeneralApiService generalApiService;
+  private DBStorageManager dbStorageManager;
 
-  @RequestMapping(value = "/{action}", method = {RequestMethod.GET, RequestMethod.POST})
-  public String generalController(HttpServletRequest request, HttpServletResponse response, ModelMap model,
-          @PathVariable("action") String action,
-          @RequestParam(value = "key", required = false) String key,
-          @RequestParam(value = "email", required = false) String email) throws Exception {
+  @Autowired
+  private Configuration configuration;
 
-    if(Utilities.empty(action)) {
-      throw new MsgCodeException("Invalid path: '" + action + "'", 404, Constants.ERROR_PARAM);
+  @RequestMapping(value = "/keyvalue", method = RequestMethod.GET)
+  public String keyValue(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+      @RequestParam(value = "key", required = false) String key) throws Exception {
+
+    log.info("*API* keyValue() key: '" + key + "'");
+
+    Map<String, String> map = new HashMap<>();
+
+    if(Utilities.empty(key)) {
+      throw new BadParameterException("'key' required");
     }
 
-    action = action.toLowerCase();
+    KeyValue keyValue = dbStorageManager.getKey(key);
 
-    log.info("generalController action: '" + action + "'");
-
-    if(action.equals("keyvalue")) {
-      return generalApiService.keyValue(request, response, model, key);
-    } else if(action.equals("emailsignup")) {
-      return generalApiService.emailSignup(request, response, model, email);
+    if(keyValue == null) {
+      throw new BadParameterException("Key not found");
     }
 
-    throw new MsgCodeException("Invalid path: '" + action + "'", 404, Constants.ERROR_PARAM);
+    map.put("key", keyValue.getKeyStr());
+    map.put("value", keyValue.getValueStr());
+
+    map.put("apiVersion", configuration.getProperty("project.version"));
+    map.put("apiBuildDate", configuration.getProperty("project.build.date"));
+
+    model.addAttribute("params", map);
+
+    return "200";
+  }
+
+  @RequestMapping(value = "/emailsignup", method = RequestMethod.POST)
+  public String emailSignup(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+      @RequestParam(value = "email", required = false) String email) throws Exception {
+
+    log.info("*API* emailSignup() email: '" + email + "'");
+
+    if(Utilities.empty(email)) {
+      throw new BadParameterException("'email' required");
+    }
+
+    email = email.toLowerCase();
+
+    try {
+      InternetAddress emailAddr = new InternetAddress(email);
+      emailAddr.validate();
+    } catch (Exception ex) {
+      throw new MsgCodeException("Invalid email address");
+    }
+
+    EmailSignup signup = new EmailSignup(email);
+
+    dbStorageManager.storeEmailSignup(signup);
+
+    return "200";
   }
 }

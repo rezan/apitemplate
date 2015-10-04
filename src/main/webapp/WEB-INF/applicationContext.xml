@@ -73,8 +73,6 @@
     
     <bean id="database" class="company.api.storage.dbclients.Database" init-method="init" destroy-method="destroy" />
     
-    <bean id="generalApiService" class="company.api.service.GeneralApiService" />
-    
     <bean id="generalFilter" class="company.api.filters.GeneralFilter" />
     
     <bean id="utilities" class="company.api.utils.Utilities" />
