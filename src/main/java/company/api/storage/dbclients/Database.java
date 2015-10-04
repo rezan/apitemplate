@@ -1,7 +1,7 @@
 package company.api.storage.dbclients;
 
-import company.data.apishard.KeyValue;
-import company.data.apidb.EmailSignup;
+import company.api.data.apishard.KeyValue;
+import company.api.data.apidb.EmailSignup;
 import company.api.utils.Utilities;
 
 import javax.persistence.EntityManager;

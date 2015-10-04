@@ -54,7 +54,7 @@
         <property name="persistenceProviderClass" value="org.hibernate.ejb.HibernatePersistence"/>
         <property name="packagesToScan">
             <list>
-                <value>company.data</value>
+                <value>company.api.data</value>
             </list>
         </property>
     </bean>

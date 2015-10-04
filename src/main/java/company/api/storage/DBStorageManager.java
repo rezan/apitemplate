@@ -1,7 +1,7 @@
 package company.api.storage;
 
-import company.data.apishard.KeyValue;
-import company.data.apidb.EmailSignup;
+import company.api.data.apishard.KeyValue;
+import company.api.data.apidb.EmailSignup;
 import company.api.storage.dbclients.Database;
 import company.api.storage.dbrouting.ThreadDBChooser;
 import company.api.utils.Utilities;

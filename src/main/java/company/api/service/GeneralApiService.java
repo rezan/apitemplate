@@ -1,7 +1,7 @@
 package company.api.service;
 
-import company.data.apishard.KeyValue;
-import company.data.apidb.EmailSignup;
+import company.api.data.apishard.KeyValue;
+import company.api.data.apidb.EmailSignup;
 import company.api.exceptions.BadParameterException;
 import company.api.exceptions.MsgCodeException;
 import company.api.utils.Utilities;

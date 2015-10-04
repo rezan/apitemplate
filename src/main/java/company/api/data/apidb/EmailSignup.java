@@ -1,4 +1,4 @@
-package company.data.apidb;
+package company.api.data.apidb;
 
 import java.io.Serializable;
 import java.util.Date;
