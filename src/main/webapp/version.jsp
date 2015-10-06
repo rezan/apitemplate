@@ -7,6 +7,7 @@
 <h1>API</h1>
 Project name: ${project.name}<br>
 Project version: ${project.version}<br>
+Environment: ${env}<br>
 Build date: ${build.date}<br>
 </body>
 </html>

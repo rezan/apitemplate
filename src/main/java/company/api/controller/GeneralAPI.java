@@ -60,6 +60,7 @@ public class GeneralAPI extends ExceptionAPI {
 
     map.put("apiVersion", configuration.getProperty("project.version"));
     map.put("apiBuildDate", configuration.getProperty("project.build.date"));
+    map.put("environment", configuration.getProperty("env"));
 
     model.addAttribute("params", map);
 

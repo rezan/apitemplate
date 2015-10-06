@@ -52,6 +52,7 @@ public class Configuration {
     log.info("Configuration override initialized: " + override.keySet().size() + " entires");
     log.info("Configuration project name: " + getProperty("project.name"));
     log.info("Configuration project version: " + getProperty("project.version"));
+    log.info("Configuration project environment: " + getProperty("env"));
     log.info("Configuration project build date: " + getProperty("project.build.date"));
   }
 
