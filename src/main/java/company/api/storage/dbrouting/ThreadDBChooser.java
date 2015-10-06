@@ -1,6 +1,7 @@
 package company.api.storage.dbrouting;
 
 import company.api.settings.Constants;
+import company.api.settings.FileSettings;
 import company.api.utils.Utilities;
 
 import java.io.File;
@@ -31,7 +32,7 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
   private static String updateSchemaDBs;
 
   @Autowired
-  private company.api.settings.FileSettings fileSettings;
+  private FileSettings fileSettings;
 
   public void init() throws Exception {
     for(String db : getUpdateSchemaDBs()) {

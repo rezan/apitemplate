@@ -13,30 +13,6 @@
     
     <context:component-scan base-package="company" />
 
-    <bean id="dataSource_apidb" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" value="${db.driver}" />
-        <property name="jdbcUrl" value="${db.url.apidb}" />
-        <property name="user" value="${db.user}" />
-        <property name="password" value="${db.password}" />
-        <property name="idleConnectionTestPeriod" value="300" />
-    </bean>
-
-    <bean id="dataSource_apishard0" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" value="${db.driver}" />
-        <property name="jdbcUrl" value="${db.url.apishard0}" />
-        <property name="user" value="${db.user}" />
-        <property name="password" value="${db.password}" />
-        <property name="idleConnectionTestPeriod" value="300" />
-    </bean>
-
-    <bean id="dataSource_apishard1" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" value="${db.driver}" />
-        <property name="jdbcUrl" value="${db.url.apishard1}" />
-        <property name="user" value="${db.user}" />
-        <property name="password" value="${db.password}" />
-        <property name="idleConnectionTestPeriod" value="300" />
-    </bean>
-    
     <bean id="shardedDataSource" class="company.api.storage.dbrouting.ThreadDBChooser" init-method="init">
         <property name="targetDataSources">
             <map>
