@@ -31,7 +31,7 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
   private static String updateSchemaDBs;
 
   @Autowired
-  private company.api.settings.Configuration configuration;
+  private company.api.settings.FileSettings fileSettings;
 
   public void init() throws Exception {
     for(String db : getUpdateSchemaDBs()) {
@@ -41,11 +41,11 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
 
       StandardServiceRegistryBuilder registry = new StandardServiceRegistryBuilder();
       registry.applySetting(Environment.HBM2DDL_AUTO, "create");
-      registry.applySetting(Environment.DIALECT, configuration.getProperty("db.dialect"));
-      registry.applySetting(Environment.URL, configuration.getProperty("db.url." + db));
-      registry.applySetting(Environment.USER, configuration.getProperty("db.user"));
-      registry.applySetting(Environment.PASS, configuration.getProperty("db.password"));
-      registry.applySetting(Environment.DRIVER, configuration.getProperty("db.driver"));
+      registry.applySetting(Environment.DIALECT, fileSettings.getProperty("db.dialect"));
+      registry.applySetting(Environment.URL, fileSettings.getProperty("db.url." + db));
+      registry.applySetting(Environment.USER, fileSettings.getProperty("db.user"));
+      registry.applySetting(Environment.PASS, fileSettings.getProperty("db.password"));
+      registry.applySetting(Environment.DRIVER, fileSettings.getProperty("db.driver"));
 
       MetadataSources metadata = new MetadataSources(registry.build());
 

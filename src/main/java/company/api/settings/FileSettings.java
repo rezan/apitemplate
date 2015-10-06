@@ -1,37 +1,36 @@
 package company.api.settings;
 
+import company.api.utils.Utilities;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import org.apache.log4j.Logger;
-import org.springframework.core.io.Resource;
-import company.api.utils.Utilities;
 
 /**
  *
  * @author Reza Naghibi
  */
-public class Configuration {
+public class FileSettings {
 
-  private static final Logger log = Logger.getLogger(Configuration.class);
+  private static final Logger log = Logger.getLogger(FileSettings.class);
 
   private Properties prop;
 
   private Properties override;
 
-  private Resource file;
-
   private String templatePath = "/templates/";
 
-  public Configuration() {
+  public FileSettings() {
     prop = new Properties();
     override = new Properties();
   }
 
   public synchronized void init() throws Exception {
-    InputStream is = new FileInputStream(getFile().getFile());
+    InputStream is = FileSettings.class.getResourceAsStream(Constants.CONFIG_LOCATION);
     prop.load(is);
     is.close();
 
@@ -104,14 +103,6 @@ public class Configuration {
       override.setProperty(key, file);
       return null;
     }
-  }
-
-  public Resource getFile() {
-    return file;
-  }
-
-  public void setFile(Resource file) {
-    this.file = file;
   }
 
 }

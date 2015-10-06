@@ -12,4 +12,5 @@ public class Constants {
   public static final String ERROR_AUTH = "a1000";
   public static final String ERROR_GENERAL = "g500";
 
+  public static final String CONFIG_LOCATION = "/api.properties";
 }

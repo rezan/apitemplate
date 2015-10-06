@@ -69,16 +69,4 @@
         
     <context:annotation-config />
     
-    <bean id="dbStorageManager" class="company.api.storage.DBStorageManager" />
-    
-    <bean id="database" class="company.api.storage.dbclients.Database" init-method="init" destroy-method="destroy" />
-    
-    <bean id="generalFilter" class="company.api.filters.GeneralFilter" />
-    
-    <bean id="utilities" class="company.api.utils.Utilities" />
-    
-    <bean id="configuration" class="company.api.settings.Configuration" init-method="init">
-        <property name="file" value="${config.location}" />
-    </bean>
-    
 </beans>

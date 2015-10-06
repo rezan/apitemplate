@@ -4,7 +4,7 @@ import company.api.data.apidb.EmailSignup;
 import company.api.data.apishard.KeyValue;
 import company.api.exceptions.BadParameterException;
 import company.api.exceptions.MsgCodeException;
-import company.api.settings.Configuration;
+import company.api.settings.FileSettings;
 import company.api.utils.Utilities;
 import company.api.storage.DBStorageManager;
 
@@ -35,7 +35,7 @@ public class GeneralAPI extends ExceptionAPI {
   private DBStorageManager dbStorageManager;
 
   @Autowired
-  private Configuration configuration;
+  private FileSettings fileSettings;
 
   @RequestMapping(value = "/keyvalue", method = RequestMethod.GET)
   public String keyValue(HttpServletRequest request, HttpServletResponse response, ModelMap model,
@@ -58,9 +58,9 @@ public class GeneralAPI extends ExceptionAPI {
     map.put("key", keyValue.getKeyStr());
     map.put("value", keyValue.getValueStr());
 
-    map.put("apiVersion", configuration.getProperty("project.version"));
-    map.put("apiBuildDate", configuration.getProperty("project.build.date"));
-    map.put("environment", configuration.getProperty("env"));
+    map.put("apiVersion", fileSettings.getProperty("project.version"));
+    map.put("apiBuildDate", fileSettings.getProperty("project.build.date"));
+    map.put("environment", fileSettings.getProperty("env"));
 
     model.addAttribute("params", map);
 
