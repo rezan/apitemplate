@@ -9,21 +9,16 @@ import company.api.utils.Utilities;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  *
  * @author Reza Naghibi
  */
 @Configuration
-@EnableTransactionManagement
 public class BaseAppConfig {
 
   @Bean

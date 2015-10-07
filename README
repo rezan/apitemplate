@@ -5,6 +5,5 @@ Supports DB sharding and auto updating schemas.
 
 TODO:
 
--remove XML based context configuration
 -refactor and reorganize DB logic
 -unit tests
