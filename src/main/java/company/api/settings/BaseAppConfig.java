@@ -1,9 +1,9 @@
 package company.api.settings;
 
 import company.api.filters.GeneralFilter;
-import company.api.storage.DBStorageManager;
-import company.api.storage.dbrouting.ThreadDBChooser;
-import company.api.storage.dbclients.Database;
+import company.api.storage.StorageManager;
+import company.api.storage.db.DatabaseChooser;
+import company.api.storage.db.Database;
 import company.api.utils.Utilities;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -32,8 +31,8 @@ public class BaseAppConfig {
   }
   
   @Bean
-  public DBStorageManager dbStorageManager() {
-    return new DBStorageManager();
+  public StorageManager dbStorageManager() {
+    return new StorageManager();
   }
 
   @Bean(initMethod = "init", destroyMethod = "destroy")
@@ -86,9 +85,9 @@ public class BaseAppConfig {
   }
 
   @Bean(initMethod = "init")
-  public ThreadDBChooser shardedDataSource(DataSource dataSource_apidb, DataSource dataSource_apishard0,
+  public DatabaseChooser shardedDataSource(DataSource dataSource_apidb, DataSource dataSource_apishard0,
           DataSource dataSource_apishard1, FileSettings fileSettings) {
-    ThreadDBChooser dbChooser = new ThreadDBChooser();
+    DatabaseChooser dbChooser = new DatabaseChooser();
 
     Map<Object, Object> sources = new HashMap<>();
 

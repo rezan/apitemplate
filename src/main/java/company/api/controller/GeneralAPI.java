@@ -6,7 +6,7 @@ import company.api.exceptions.BadParameterException;
 import company.api.exceptions.MsgCodeException;
 import company.api.settings.FileSettings;
 import company.api.utils.Utilities;
-import company.api.storage.DBStorageManager;
+import company.api.storage.StorageManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class GeneralAPI extends ExceptionAPI {
   private static final Logger log = Logger.getLogger(GeneralAPI.class);
 
   @Autowired
-  private DBStorageManager dbStorageManager;
+  private StorageManager dbStorageManager;
 
   @Autowired
   private FileSettings fileSettings;

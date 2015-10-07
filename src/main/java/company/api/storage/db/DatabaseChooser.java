@@ -1,4 +1,4 @@
-package company.api.storage.dbrouting;
+package company.api.storage.db;
 
 import company.api.settings.Constants;
 import company.api.settings.FileSettings;
@@ -23,9 +23,9 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
  *
  * @author Reza Naghibi
  */
-public class ThreadDBChooser extends AbstractRoutingDataSource {
+public class DatabaseChooser extends AbstractRoutingDataSource {
 
-  private static final Logger log = Logger.getLogger(ThreadDBChooser.class);
+  private static final Logger log = Logger.getLogger(DatabaseChooser.class);
 
   private static final ThreadLocal<String> threadContext = new ThreadLocal<>();
 
@@ -69,27 +69,35 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
   }
 
   private Class[] getClasses(String packageName) throws Exception {
-    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     String path = packageName.replace('.', '/');
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     Enumeration<URL> resources = classLoader.getResources(path);
+
     List<File> dirs = new ArrayList<>();
+
     while(resources.hasMoreElements()) {
       URL resource = resources.nextElement();
       dirs.add(new File(resource.getFile()));
     }
+
     ArrayList<Class> classes = new ArrayList<>();
+
     for(File directory : dirs) {
       classes.addAll(findClasses(directory, packageName));
     }
+
     return classes.toArray(new Class[classes.size()]);
   }
 
   private List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException {
     List<Class> classes = new ArrayList<>();
+
     if(!directory.exists()) {
       return classes;
     }
+
     File[] files = directory.listFiles();
+
     for(File file : files) {
       if(file.isDirectory()) {
         classes.addAll(findClasses(file, packageName + "." + file.getName()));
@@ -97,6 +105,7 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
         classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
       }
     }
+    
     return classes;
   }
 
@@ -133,7 +142,7 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
     return (String)(threadContext.get());
   }
 
-  public static List<String> getUpdateSchemaDBs() {
+  public List<String> getUpdateSchemaDBs() {
     if(Utilities.empty(updateSchemaDBs)) {
       return new ArrayList<>();
     }
@@ -141,7 +150,7 @@ public class ThreadDBChooser extends AbstractRoutingDataSource {
     return Arrays.asList(updateSchemaDBs.split(" "));
   }
 
-  public static void setUpdateSchemaDBs(String aAllDBs) {
+  public void setUpdateSchemaDBs(String aAllDBs) {
     updateSchemaDBs = aAllDBs;
   }
 }

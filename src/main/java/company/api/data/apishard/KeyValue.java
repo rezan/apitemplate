@@ -1,6 +1,6 @@
 package company.api.data.apishard;
 
-import company.api.storage.dbrouting.ThreadDBChooser;
+import company.api.storage.db.DatabaseChooser;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -46,9 +46,9 @@ public class KeyValue implements Serializable {
     char c = Character.toLowerCase(key.charAt(0));
 
     if(c >= 'a' && c <= 'k') {
-      ThreadDBChooser.setDB("apishard0");
+      DatabaseChooser.setDB("apishard0");
     } else {
-      ThreadDBChooser.setDB("apishard1");
+      DatabaseChooser.setDB("apishard1");
     }
   }
 

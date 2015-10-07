@@ -2,8 +2,8 @@ package company.api.storage;
 
 import company.api.data.apishard.KeyValue;
 import company.api.data.apidb.EmailSignup;
-import company.api.storage.dbclients.Database;
-import company.api.storage.dbrouting.ThreadDBChooser;
+import company.api.storage.db.Database;
+import company.api.storage.db.DatabaseChooser;
 import company.api.utils.Utilities;
 
 import org.apache.log4j.Logger;
@@ -13,15 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Reza Naghibi
  */
-public class DBStorageManager {
+public class StorageManager {
 
-  private static final Logger log = Logger.getLogger(DBStorageManager.class);
+  private static final Logger log = Logger.getLogger(StorageManager.class);
 
   @Autowired
   private Database database;
 
-  public DBStorageManager() {
-    log.info("DBStorageManager initialized.");
+  public StorageManager() {
+    log.info("StorageManager initialized.");
   }
 
   public KeyValue getKey(String key) {
@@ -32,8 +32,8 @@ public class DBStorageManager {
     KeyValue application = database.getKey(key);
 
     long diff = System.nanoTime() - start;
-    log.info("DBStorageManager getKey(" + key + ") got: " + application);
-    log.info("DBStorageManager getKey(" + key + ") took " + Utilities.getTime(diff));
+    log.info("StorageManager getKey(" + key + ") got: " + application);
+    log.info("StorageManager getKey(" + key + ") took " + Utilities.getTime(diff));
 
     return application;
   }
@@ -41,11 +41,11 @@ public class DBStorageManager {
   public void storeEmailSignup(EmailSignup emailSignup) {
     long start = System.nanoTime();
 
-    ThreadDBChooser.setDB("api");
+    DatabaseChooser.setDB("api");
 
     database.storeEmailSignup(emailSignup);
 
     long diff = System.nanoTime() - start;
-    log.info("DBStorageManager storeEmailSignup(" + emailSignup + ") took " + Utilities.getTime(diff));
+    log.info("StorageManager storeEmailSignup(" + emailSignup + ") took " + Utilities.getTime(diff));
   }
 }

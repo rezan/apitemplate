@@ -1,4 +1,4 @@
-package company.api.storage.dbclients;
+package company.api.storage.db;
 
 import company.api.data.apishard.KeyValue;
 import company.api.data.apidb.EmailSignup;
@@ -75,7 +75,7 @@ public class Database {
   }
 
   private Session getSession() {
-    return ((Session) (getManager().getDelegate()));
+    return ((Session)(getManager().getDelegate()));
   }
 
   private EntityManager getManager() {
