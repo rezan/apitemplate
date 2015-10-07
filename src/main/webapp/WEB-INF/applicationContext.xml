@@ -12,18 +12,6 @@
     default-autowire="byName">
     
     <context:component-scan base-package="company" />
-
-    <bean id="shardedDataSource" class="company.api.storage.dbrouting.ThreadDBChooser" init-method="init">
-        <property name="targetDataSources">
-            <map>
-                <entry key="apidb" value-ref="dataSource_apidb"/>
-                <entry key="apishard0" value-ref="dataSource_apishard0"/>
-                <entry key="apishard1" value-ref="dataSource_apishard1"/>
-            </map>
-        </property>
-        <property name="defaultTargetDataSource" ref="dataSource_apidb"/>
-        <property name="updateSchemaDBs" value="${db.updateSchema}" />
-    </bean>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardedDataSource" />
