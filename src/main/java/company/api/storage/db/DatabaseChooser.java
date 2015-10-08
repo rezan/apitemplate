@@ -13,13 +13,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-/* hibernate 5
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.boot.spi.MetadataImplementor;
-import org.hibernate.cfg.Environment;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-*/
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
@@ -63,30 +56,6 @@ public class DatabaseChooser extends AbstractRoutingDataSource {
 
       SchemaUpdate update = new SchemaUpdate(config);
       update.execute(true, true);
-
-      /* hibernate 5
-      StandardServiceRegistryBuilder registry = new StandardServiceRegistryBuilder();
-      registry.applySetting(Environment.HBM2DDL_AUTO, "create");
-      registry.applySetting(Environment.DIALECT, fileSettings.getProperty("db.dialect"));
-      registry.applySetting(Environment.URL, fileSettings.getProperty("db.url." + db));
-      registry.applySetting(Environment.USER, fileSettings.getProperty("db.user"));
-      registry.applySetting(Environment.PASS, fileSettings.getProperty("db.password"));
-      registry.applySetting(Environment.DRIVER, fileSettings.getProperty("db.driver"));
-
-      MetadataSources metadata = new MetadataSources(registry.build());
-
-      String pkg = Constants.PACKAGE_PREFIX + ".data." + trimShard(db);
-
-      log.info("ThreadDBChooser scanning: " + pkg);
-
-      for(Class cls : getClasses(pkg)) {
-        log.info("ThreadDBChooser found class: " + cls.getName());
-        metadata.addAnnotatedClass(cls);
-      }
-
-      SchemaUpdate update = new SchemaUpdate((MetadataImplementor)metadata.buildMetadata());
-      update.execute(true, true);
-      */
     }
 
     defaultDB();
