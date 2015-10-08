@@ -6,7 +6,7 @@ import company.api.storage.db.DatabaseChooser;
 import company.api.storage.db.Database;
 import company.api.utils.Utilities;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.jolbox.bonecp.BoneCPDataSource;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -47,39 +47,39 @@ public class BaseAppConfig {
 
   @Bean(destroyMethod = "close")
   public DataSource dataSource_apidb(FileSettings fileSettings) throws Exception {
-    ComboPooledDataSource ds = new ComboPooledDataSource();
+    BoneCPDataSource ds = new BoneCPDataSource();
 
     ds.setDriverClass(fileSettings.getProperty("db.driver"));
     ds.setJdbcUrl(fileSettings.getProperty("db.url.apidb"));
     ds.setUser(fileSettings.getProperty("db.user"));
     ds.setPassword(fileSettings.getProperty("db.password"));
-    ds.setIdleConnectionTestPeriod(300);
+    ds.setIdleConnectionTestPeriodInSeconds(300);
 
     return ds;
   }
 
   @Bean(destroyMethod = "close")
   public DataSource dataSource_apishard0(FileSettings fileSettings) throws Exception {
-    ComboPooledDataSource ds = new ComboPooledDataSource();
+    BoneCPDataSource ds = new BoneCPDataSource();
 
     ds.setDriverClass(fileSettings.getProperty("db.driver"));
     ds.setJdbcUrl(fileSettings.getProperty("db.url.apishard0"));
     ds.setUser(fileSettings.getProperty("db.user"));
     ds.setPassword(fileSettings.getProperty("db.password"));
-    ds.setIdleConnectionTestPeriod(300);
+    ds.setIdleConnectionTestPeriodInSeconds(300);
 
     return ds;
   }
 
   @Bean(destroyMethod = "close")
   public DataSource dataSource_apishard1(FileSettings fileSettings) throws Exception {
-    ComboPooledDataSource ds = new ComboPooledDataSource();
+    BoneCPDataSource ds = new BoneCPDataSource();
 
     ds.setDriverClass(fileSettings.getProperty("db.driver"));
     ds.setJdbcUrl(fileSettings.getProperty("db.url.apishard1"));
     ds.setUser(fileSettings.getProperty("db.user"));
     ds.setPassword(fileSettings.getProperty("db.password"));
-    ds.setIdleConnectionTestPeriod(300);
+    ds.setIdleConnectionTestPeriodInSeconds(300);
 
     return ds;
   }

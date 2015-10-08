@@ -11,11 +11,15 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+/* hibernate 5
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.cfg.Environment;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+*/
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
@@ -40,6 +44,27 @@ public class DatabaseChooser extends AbstractRoutingDataSource {
 
       setDB(db);
 
+      Configuration config = new Configuration();
+      config.setProperty(org.hibernate.cfg.Environment.HBM2DDL_AUTO, "create");
+      config.setProperty(org.hibernate.cfg.Environment.DIALECT, fileSettings.getProperty("db.dialect"));
+      config.setProperty(org.hibernate.cfg.Environment.URL, fileSettings.getProperty("db.url." + db));
+      config.setProperty(org.hibernate.cfg.Environment.USER, fileSettings.getProperty("db.user"));
+      config.setProperty(org.hibernate.cfg.Environment.PASS, fileSettings.getProperty("db.password"));
+      config.setProperty(org.hibernate.cfg.Environment.DRIVER, fileSettings.getProperty("db.driver"));
+
+      String pkg = Constants.PACKAGE_PREFIX + ".data." + trimShard(db);
+
+      log.info("ThreadDBChooser scanning: " + pkg);
+
+      for(Class cls : getClasses(pkg)) {
+        log.info("ThreadDBChooser found class: " + cls.getName());
+        config.addAnnotatedClass(cls);
+      }
+
+      SchemaUpdate update = new SchemaUpdate(config);
+      update.execute(true, true);
+
+      /* hibernate 5
       StandardServiceRegistryBuilder registry = new StandardServiceRegistryBuilder();
       registry.applySetting(Environment.HBM2DDL_AUTO, "create");
       registry.applySetting(Environment.DIALECT, fileSettings.getProperty("db.dialect"));
@@ -61,6 +86,7 @@ public class DatabaseChooser extends AbstractRoutingDataSource {
 
       SchemaUpdate update = new SchemaUpdate((MetadataImplementor)metadata.buildMetadata());
       update.execute(true, true);
+      */
     }
 
     defaultDB();
