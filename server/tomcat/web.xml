@@ -6,9 +6,9 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
+    <!-- put 50x.js in webapps/ROOT -->
     <error-page>
         <error-code>404</error-code>
         <location>/50x.js</location>
     </error-page>
-
 </web-app>
