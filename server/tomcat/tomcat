@@ -1,0 +1,83 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          tomcat
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the tomcat web server
+# Description:       starts the tomcat web server
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+CATALINA_HOME=/opt/tomcat8
+JAVA_HOME=/opt/jdk1.8.0_65
+#sudo useradd -d /opt/tomcat7 tomcat
+USER=tomcat
+
+must_be_root() {
+  if [ "`id -u`" != "0" ]
+  then
+     echo "Must be root"
+     exit 1
+  fi
+}
+
+tomcat_not_running() {
+  pid=$(tomcat_pid)
+  if [ -n "$pid" ]
+  then
+    echo "Tomcat is running"
+    exit 1
+  fi
+}
+
+tomcat_running() {
+  pid=$(tomcat_pid)
+  if [ ! -n "$pid" ]
+  then
+    echo "Tomcat is not running"
+    exit 1
+  fi
+}
+
+tomcat_pid() {
+  echo `ps aux | grep org.apache.catalina.startup.Bootstrap | grep -v grep | awk '{ print $2 }'`
+}
+
+case "$1" in
+ start)
+        must_be_root
+        tomcat_not_running
+        if [ -f $CATALINA_HOME/bin/startup.sh ];
+          then
+	    echo "Starting Tomcat"
+            /bin/su $USER $CATALINA_HOME/bin/startup.sh
+        fi
+	;;
+ stop)
+        must_be_root
+        tomcat_running
+        if [ -f $CATALINA_HOME/bin/shutdown.sh ];
+          then
+	    echo "Stopping Tomcat"
+            /bin/su $USER $CATALINA_HOME/bin/shutdown.sh
+        fi
+ 	;;
+ status)
+        pid=$(tomcat_pid)
+        if [ -n "$pid" ]
+        then
+          echo "Tomcat is running with pid: $pid"
+        else
+          echo "Tomcat is not running"
+        fi
+        ;;
+ *)
+ 	echo "Usage: $0 {start|stop|status}"
+	exit 1
+	;;
+esac
+
+exit 0

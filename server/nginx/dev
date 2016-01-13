@@ -1,0 +1,18 @@
+server {
+  listen 80 default_server;
+
+  root /opt/www;
+  index index.html index;
+  default_type text/html;
+
+  server_name dev.company;
+
+  server_tokens off;
+  add_header X-Srv "dev";
+
+  error_page 403 404 500 502 503 504 error.html;
+
+  location /api {
+    proxy_pass http://127.0.0.1:8080;
+  }
+}

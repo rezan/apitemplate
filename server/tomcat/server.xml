@@ -1,0 +1,7 @@
+<Executor name="tomcatThreadPool" namePrefix="catalina-exec-"
+    maxThreads="150" minSpareThreads="4"/>
+
+<Connector executor="tomcatThreadPool"
+    port="8080" protocol="HTTP/1.1"
+    connectionTimeout="200000" URIEncoding="UTF-8"
+    redirectPort="8443" maxPostSize="-1" />
