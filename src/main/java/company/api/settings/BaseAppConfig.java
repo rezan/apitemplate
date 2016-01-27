@@ -4,6 +4,7 @@ import company.api.filters.GeneralFilter;
 import company.api.storage.StorageManager;
 import company.api.storage.db.DatabaseChooser;
 import company.api.storage.db.Database;
+import company.api.storage.file.S3;
 import company.api.utils.Utilities;
 
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -100,5 +101,16 @@ public class BaseAppConfig {
     dbChooser.setUpdateSchemaDBs(fileSettings.getProperty("db.updateSchema"));
 
     return dbChooser;
+  }
+
+  @Bean(initMethod = "init")
+  public S3 s3(FileSettings fileSettings) throws Exception {
+    S3 s3 = new S3();
+
+    s3.setSecretKey(fileSettings.getProperty("ec2.secretkey"));
+    s3.setAccessKey(fileSettings.getProperty("ec2.accesskey"));
+    s3.setS3Url(fileSettings.getProperty("s3.url"));
+
+    return s3;
   }
 }

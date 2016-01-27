@@ -31,6 +31,14 @@ public class KeyValue implements Serializable {
   @Basic
   private String valueStr;
 
+  public KeyValue() {
+  }
+
+  public KeyValue(String key, String value) {
+    keyStr = key;
+    valueStr = value;
+  }
+
   @Override
   public String toString() {
     StringBuilder s = new StringBuilder();

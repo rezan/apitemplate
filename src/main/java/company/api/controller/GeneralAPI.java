@@ -32,16 +32,16 @@ public class GeneralAPI extends ExceptionAPI {
   private static final Logger log = Logger.getLogger(GeneralAPI.class);
 
   @Autowired
-  private StorageManager dbStorageManager;
+  private StorageManager storageManager;
 
   @Autowired
   private FileSettings fileSettings;
 
   @RequestMapping(value = "/keyvalue", method = RequestMethod.GET)
-  public String keyValue(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+  public String getKeyValue(HttpServletRequest request, HttpServletResponse response, ModelMap model,
       @RequestParam(value = "key", required = false) String key) throws Exception {
 
-    log.info("*API* keyValue() key: '" + key + "'");
+    log.info("*API* getKeyValue() key: '" + key + "'");
 
     Map<String, String> map = new HashMap<>();
 
@@ -49,7 +49,7 @@ public class GeneralAPI extends ExceptionAPI {
       throw new BadParameterException("'key' required");
     }
 
-    KeyValue keyValue = dbStorageManager.getKey(key);
+    KeyValue keyValue = storageManager.getKeyValue(key);
 
     if(keyValue == null) {
       throw new BadParameterException("Key not found");
@@ -57,6 +57,96 @@ public class GeneralAPI extends ExceptionAPI {
 
     map.put("key", keyValue.getKeyStr());
     map.put("value", keyValue.getValueStr());
+
+    map.put("apiVersion", fileSettings.getProperty("project.version"));
+    map.put("apiBuildDate", fileSettings.getProperty("project.build.date"));
+    map.put("environment", fileSettings.getProperty("env"));
+
+    model.addAttribute("params", map);
+
+    return "200";
+  }
+
+  @RequestMapping(value = "/keyvalue", method = RequestMethod.POST)
+  public String storeKeyValue(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+      @RequestParam(value = "key", required = false) String key,
+      @RequestParam(value = "value", required = false) String value) throws Exception {
+
+    log.info("*API* storeKeyValue() key: '" + key + "' value: '" + value + "'");
+
+    Map<String, String> map = new HashMap<>();
+
+    if(Utilities.empty(key)) {
+      throw new BadParameterException("'key' required");
+    }
+
+    if(value == null) {
+      value = "";
+    }
+
+    KeyValue keyValue = new KeyValue(key, value);
+
+    storageManager.storeKeyValue(keyValue);
+
+    map.put("key", keyValue.getKeyStr());
+    map.put("value", keyValue.getValueStr());
+
+    map.put("apiVersion", fileSettings.getProperty("project.version"));
+    map.put("apiBuildDate", fileSettings.getProperty("project.build.date"));
+    map.put("environment", fileSettings.getProperty("env"));
+
+    model.addAttribute("params", map);
+
+    return "200";
+  }
+
+  @RequestMapping(value = "/s3", method = RequestMethod.GET)
+  public String getS3(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+      @RequestParam(value = "file", required = false) String file) throws Exception {
+
+    log.info("*API* storeS3() file: '" + file + "'");
+
+    Map<String, String> map = new HashMap<>();
+
+    if(Utilities.empty(file)) {
+      throw new BadParameterException("'file' required");
+    }
+
+    String content = storageManager.getS3(file);
+
+    map.put("file", file);
+    map.put("content", content);
+
+    map.put("apiVersion", fileSettings.getProperty("project.version"));
+    map.put("apiBuildDate", fileSettings.getProperty("project.build.date"));
+    map.put("environment", fileSettings.getProperty("env"));
+
+    model.addAttribute("params", map);
+
+    return "200";
+  }
+
+  @RequestMapping(value = "/s3", method = RequestMethod.POST)
+  public String storeS3(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+      @RequestParam(value = "file", required = false) String file,
+      @RequestParam(value = "content", required = false) String content) throws Exception {
+
+    log.info("*API* storeS3() file: '" + file + "' content: '" + content + "'");
+
+    Map<String, String> map = new HashMap<>();
+
+    if(Utilities.empty(file)) {
+      throw new BadParameterException("'file' required");
+    }
+
+    if(content == null) {
+      content = "";
+    }
+
+    storageManager.storeS3(file, content);
+
+    map.put("file", file);
+    map.put("content", content);
 
     map.put("apiVersion", fileSettings.getProperty("project.version"));
     map.put("apiBuildDate", fileSettings.getProperty("project.build.date"));
@@ -88,7 +178,7 @@ public class GeneralAPI extends ExceptionAPI {
 
     EmailSignup signup = new EmailSignup(email);
 
-    dbStorageManager.storeEmailSignup(signup);
+    storageManager.storeEmailSignup(signup);
 
     return "200";
   }

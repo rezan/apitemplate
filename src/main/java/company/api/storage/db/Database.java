@@ -32,7 +32,7 @@ public class Database {
   }
 
   @Transactional(readOnly = true)
-  public KeyValue getKey(String key) {
+  public KeyValue getKeyValue(String key) {
     try {
       long start = System.nanoTime();
 
@@ -42,11 +42,25 @@ public class Database {
       KeyValue keyValue = (KeyValue)criteria.uniqueResult();
 
       long diff = System.nanoTime() - start;
-      log.info("Database getKey(" + key + ") took " + Utilities.getTime(diff));
+      log.info("Database getKeyValue(" + key + ") took " + Utilities.getTime(diff));
 
       return keyValue;
     } catch (Exception ex) {
-      log.error("ERROR Database getKey(" + key + "): " + ex.toString(), ex);
+      log.error("ERROR Database getKeyValue(" + key + "): " + ex.toString(), ex);
+      throw ex;
+    }
+  }
+
+  public void storeKeyValue(KeyValue keyValue) {
+    try {
+      long start = System.nanoTime();
+
+      getSession().persist(keyValue);
+
+      long diff = System.nanoTime() - start;
+      log.debug("Database storeKeyValue(" + keyValue + ") took " + Utilities.getTime(diff));
+    } catch (Exception ex) {
+      log.error("ERROR Database storeKeyValue(" + keyValue + "): " + ex.toString(), ex);
       throw ex;
     }
   }

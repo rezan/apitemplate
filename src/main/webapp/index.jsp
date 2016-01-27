@@ -15,12 +15,41 @@
 
 <a id="general"><h2>General</h2></a>
 
-<b>key value</b>
+<b>get key value</b>
 GET /general/keyvalue
 Get value for key
 -params: key
 <form action="general/keyvalue" method="GET">
 key: <input type="text" name="key">
+<input type="submit" value="Submit">
+</form>
+
+<b>store key value</b>
+POST /general/keyvalue
+Set value for key
+-params: key, value
+<form action="general/keyvalue" method="POST">
+key: <input type="text" name="key">
+value: <input type="text" name="value">
+<input type="submit" value="Submit">
+</form>
+
+<b>get s3</b>
+GET /general/s3
+Get a file
+-params: file
+<form action="general/s3" method="GET">
+file: <input type="text" name="file">
+<input type="submit" value="Submit">
+</form>
+
+<b>store s3</b>
+POST /general/s3
+Set content for a file
+-params: file, content
+<form action="general/s3" method="POST">
+file: <input type="text" name="file">
+content: <input type="text" name="content">
 <input type="submit" value="Submit">
 </form>
 

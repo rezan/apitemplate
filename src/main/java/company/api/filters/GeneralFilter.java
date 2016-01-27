@@ -36,7 +36,7 @@ public class GeneralFilter implements Filter {
     chain.doFilter(request, response);
 
     long diff = System.nanoTime() - start;
-    log.info("Call '" + httpRequest.getRequestURI() + "' took " + Utilities.getTime(diff));
+    log.info("Call '" + httpRequest.getMethod() + " " + httpRequest.getRequestURI() + "' took " + Utilities.getTime(diff));
   }
 
   @Override
