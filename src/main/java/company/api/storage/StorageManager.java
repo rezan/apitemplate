@@ -60,7 +60,7 @@ public class StorageManager {
   public String getS3(String file) throws Exception {
     long start = System.nanoTime();
 
-    String bucket = fileSettings.getProperty("s3.mediaBucket");
+    String bucket = fileSettings.getProperty("s3.bucket");
 
     String content = s3.getString(bucket, file);
 
