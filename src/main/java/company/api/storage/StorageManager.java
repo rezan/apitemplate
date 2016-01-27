@@ -75,7 +75,7 @@ public class StorageManager {
 
     String bucket = fileSettings.getProperty("s3.bucket");
 
-    s3.storeString(bucket, file, content, "text/plain");
+    s3.storeString(bucket, file, content, "text/plain", "test-user");
 
     long diff = System.nanoTime() - start;
     log.info("StorageManager storeS3(" + file + ") took " + Utilities.getTime(diff));

@@ -43,47 +43,26 @@ public class S3 {
       throw new RuntimeException("S3 is not initialized");
     }
 
-    String fmt = "EEE, dd MMM yyyy HH:mm:ss ";
+    String fmt = "EEE, dd MMM yyyy HH:mm:ss Z";
+
     dateFormat = new SimpleDateFormat(fmt, Locale.US);
     dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     log.info("S3 initialized, s3Url: " + getS3Url());
   }
 
-  public void storeString(String bucket, String file, String content, String contentType) throws Exception {
-    int tries = 0;
-
-    Exception tex = new MsgCodeException("Too many s3 attempts, aborting", 400, "m2010");
-
-    while(tries <= 4) {
-
-      tries++;
-
-      if(tries == 4) {
-        throw tex;
-      }
-
-      try {
-        store(bucket, file, content, null, 0, contentType, null, false);
-      } catch (Exception ex) {
-        log.error("S3 storeString error, going to retry: " + ex.toString());
-        tex = ex;
-        Thread.sleep(1000);
-        continue;
-      }
-
-      break;
-    }
+  public void storeString(String bucket, String file, String content, String contentType, String userId) throws Exception {
+    store(bucket, file, content, null, 0, contentType, userId, false, 2);
   }
 
-  public String storeMedia(String bucket, String file, InputStream in, int len, String contentType, String userId) throws Exception {
-    return store(bucket, file, "", in, len, contentType, userId, true);
+  public String storeStream(String bucket, String file, InputStream in, int len, String contentType, String userId) throws Exception {
+    return store(bucket, file, "", in, len, contentType, userId, true, 0);
   }
 
-  private String store(String bucket, String file, String content, InputStream in, int len, String contentType, String userId, boolean pub) throws Exception {
+  private String store(String bucket, String file, String content, InputStream in, int len, String contentType, String userId, boolean pub, int retries) throws Exception {
     long start = System.nanoTime();
 
-    s3Request("PUT", bucket, file, content, in, len, contentType, userId, pub);
+    s3Request("PUT", bucket, file, content, in, len, contentType, userId, pub, retries);
 
     String ret = getS3Url(bucket, file);
 
@@ -100,7 +79,7 @@ public class S3 {
   private String get(String bucket, String file) throws Exception {
     long start = System.nanoTime();
 
-    HttpURLConnection http = s3Request("GET", bucket, file, "", null, 0, "", "", false);
+    HttpURLConnection http = s3Request("GET", bucket, file, "", null, 0, "", "", false, 0);
 
     String ret = getResponse(http.getInputStream());
 
@@ -117,14 +96,14 @@ public class S3 {
   private void delete(String bucket, String file) throws Exception {
     long start = System.nanoTime();
 
-    s3Request("DELETE", bucket, file, "", null, 0, "", "", false);
+    s3Request("DELETE", bucket, file, "", null, 0, "", "", false, 0);
 
     long diff = System.nanoTime() - start;
     log.debug("S3 delete() for asset '" + file + "' in bucket '" + bucket + "' took " + Utilities.getTime(diff));
   }
 
   private HttpURLConnection s3Request(String method, String bucket, String file, String content, InputStream in, int len,
-          String contentType, String userId, boolean pub) throws Exception {
+          String contentType, String userId, boolean pub, int retries) throws Exception {
 
     String contentMD5 = "";
 
@@ -146,22 +125,27 @@ public class S3 {
       contentType = "";
     }
 
-    String date = dateFormat.format(new Date()) + "+0000";
+    String date = dateFormat.format(new Date());
 
     StringBuilder buf = new StringBuilder();
+
     buf.append(method).append("\n");
     buf.append(contentMD5).append("\n");
     buf.append(contentType).append("\n");
     buf.append(date).append("\n");
+
     if(pub) {
       buf.append("x-amz-acl:public-read\n");
     }
+
     if(!Utilities.empty(userId)) {
       buf.append("x-amz-meta-user:").append(userId).append("\n");
     }
+
     buf.append("/").append(bucket).append("/").append(file);
 
     String signature = sign(buf.toString());
+
     String awsAuth = "AWS " + getAccessKey() + ":" + signature;
 
     try {
@@ -172,6 +156,7 @@ public class S3 {
       URL url = new URL(lS3Url);
 
       HttpURLConnection http = (HttpURLConnection)url.openConnection();
+
       http.setConnectTimeout(10000);
       http.setReadTimeout(10000);
       http.setDoInput(true);
@@ -201,24 +186,32 @@ public class S3 {
       if(!Utilities.empty(content)) {
         http.setRequestProperty("Content-MD5", contentMD5);
         http.setDoOutput(true);
+
         OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
+
         out.write(content);
         out.flush();
         out.close();
+
         log.debug("S3 s3Request wrote " + content.length() + " bytes");
       } else if(in != null) {
         http.setDoOutput(true);
+
         OutputStream out = http.getOutputStream();
+
         byte bbuf[] = new byte[10000];
         int rlen;
         int total = 0;
+
         while((rlen = in.read(bbuf)) > 0) {
           total += rlen;
           out.write(bbuf, 0, rlen);
         }
+
         out.flush();
         out.close();
         in.close();
+
         log.debug("S3 s3Request wrote " + total + " bytes");
       }
 
@@ -228,19 +221,27 @@ public class S3 {
         log.error("S3 s3Request ERROR invalid response: " + http.getResponseMessage() + " (" + http.getResponseCode() + ")");
         log.error("S3 s3Request ERROR string to sign:\n" + buf);
         log.error("S3 s3Request ERROR auth string: " + awsAuth);
+
         try {
           String errorContent = getResponse(http.getErrorStream());
           log.error("S3 s3Request ERROR response:\n" + errorContent);
         } catch (Exception ex) {
           log.error("S3 s3Request ERROR no response content");
         }
-        throw new MsgCodeException("S3 s3Request ERROR invalid response: " + http.getResponseMessage() + " (" + http.getResponseCode() + ")", 400, "m2010");
+          throw new MsgCodeException("S3 s3Request ERROR invalid response: " + http.getResponseMessage() + " (" + http.getResponseCode() + ")", 400, "m2010");
       }
 
       return http;
     } catch (Exception ex) {
       log.error("S3 s3Request ERROR exception: " + ex.toString(), ex);
-      throw new WrappedException(ex, 400, "m2010");
+
+      if(retries <= 0 || in != null) {
+        throw new WrappedException(ex, 400, "m2010");
+      } else {
+        log.error("S3 s3Request ERROR, sleep 1s, retries: " + retries);
+        Thread.sleep(1000);
+        return s3Request(method, bucket, file, content, in, len, contentType, userId, pub, retries - 1);
+      }
     }
   }
 
@@ -270,8 +271,7 @@ public class S3 {
       if(reader != null) {
         try {
           reader.close();
-        } catch (Exception ex1) {
-        }
+        } catch (Exception ex1) {}
       }
     }
   }
