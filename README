@@ -1,6 +1,6 @@
 Java API backend using Spring and Hibernate.
 
-Supports DB sharding and auto updating schemas.
+Supports DB sharding, auto updating schemas, and S3.
 
 
 TODO:
